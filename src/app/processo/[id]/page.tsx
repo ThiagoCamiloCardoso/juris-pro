@@ -300,16 +300,33 @@ function InfoItem({ icon, label, value }: { icon: React.ReactNode; label: string
 }
 
 function getTribunalUrl(tribunal: string, numeroProcesso: string): string {
-  const num = numeroProcesso.replace(/\D/g, "");
+  // Formata número CNJ: NNNNNNN-DD.AAAA.J.TT.OOOO
+  const clean = numeroProcesso.replace(/\D/g, "");
+  const cnj = clean.length === 20
+    ? `${clean.slice(0, 7)}-${clean.slice(7, 9)}.${clean.slice(9, 13)}.${clean.slice(13, 14)}.${clean.slice(14, 16)}.${clean.slice(16)}`
+    : numeroProcesso;
+
+  // Usa a busca pública do CNJ como fallback confiável
+  const cnjSearch = `https://www.cnj.jus.br/pjecnj/numproc.seam?cbPesquisa=NUMPROC&Pesquisar=Pesquisar&dePesquisaNuUnificado=${encodeURIComponent(cnj)}`;
+
   const urls: Record<string, string> = {
-    STJ: `https://processo.stj.jus.br/processo/pesquisa/?tipoPesquisa=tipoPesquisaNumeroRegistro&termo=${num}`,
-    STF: `https://portal.stf.jus.br/processos/listarProcessos.asp?numeroProcesso=${num}`,
-    TST: `https://consultaprocessual.tst.jus.br/consultaProcessual/consultaTstNumUnica.do?consulta=Consultar&numeroTst=${num}`,
-    TRF1: `https://processual.trf1.jus.br/consultaProcessual/processo.php?proc=${num}`,
-    TRF4: `https://jurisprudencia.trf4.jus.br/pesquisa/pesquisa.php?tipo=1&numero=${num}`,
-    TJSP: `https://esaj.tjsp.jus.br/cpopg/show.do?processo.numero=${num}`,
-    TJRJ: `https://www3.tjrj.jus.br/ejud/ConsultaProcesso.aspx?N=${num}`,
-    TJMG: `https://processo.tjmg.jus.br/jurisprudencia/pesquisaPalavrasEspelhoAcordao.do?numeroProcesso=${num}`,
+    STJ: `https://processo.stj.jus.br/processo/pesquisa/?tipoPesquisa=tipoPesquisaNumeroRegistro&termo=${encodeURIComponent(cnj)}`,
+    STF: `https://portal.stf.jus.br/processos/listarProcessos.asp?classe=&numeroProcesso=${encodeURIComponent(cnj)}`,
+    TST: `https://consultaprocessual.tst.jus.br/consultaProcessual/consultaTstNumUnica.do?consulta=Consultar&conscsjt=&numeroTst=${encodeURIComponent(cnj)}&camposPesquisados=numeroTst`,
+    TRF1: `https://processual.trf1.jus.br/consultaProcessual/processo.php?proc=${encodeURIComponent(cnj)}&secao=TRF1`,
+    TRF2: `https://portal.trf2.jus.br/portal/processo/consulta-processual?numeroProcesso=${encodeURIComponent(cnj)}`,
+    TRF3: `https://web.trf3.jus.br/base/base/Base/ResultadoPesquisa?TipoConsulta=1&NrProcesso=${encodeURIComponent(cnj)}`,
+    TRF4: `https://jurisprudencia.trf4.jus.br/pesquisa/pesquisa.php?tipo=1&numero=${encodeURIComponent(cnj)}`,
+    TRF5: `https://www.trf5.jus.br/processo/?numero=${encodeURIComponent(cnj)}`,
+    TJSP: `https://esaj.tjsp.jus.br/cpopg/search.do?conversationId=&cbPesquisa=NUMPROC&numeroDigitoAnoUnificado=${encodeURIComponent(cnj)}&localPesquisa.cdLocal=-1&botaoConsultarProcessos=Consultar`,
+    TJRJ: `https://www3.tjrj.jus.br/ejud/ConsultaProcesso.aspx?N=${encodeURIComponent(cnj)}`,
+    TJMG: `https://processo.tjmg.jus.br/jurisprudencia/pesquisaPalavrasEspelhoAcordao.do?numeroProcesso=${encodeURIComponent(cnj)}`,
+    TJRS: `https://www.tjrs.jus.br/site/processos/processo/?numero=${encodeURIComponent(cnj)}`,
+    TJSC: `https://esaj.tjsc.jus.br/cpopg/search.do?conversationId=&cbPesquisa=NUMPROC&numeroDigitoAnoUnificado=${encodeURIComponent(cnj)}`,
+    TJBA: `https://esaj.tjba.jus.br/cpopg/search.do?conversationId=&cbPesquisa=NUMPROC&numeroDigitoAnoUnificado=${encodeURIComponent(cnj)}`,
+    TJCE: `https://esaj.tjce.jus.br/cpopg/search.do?conversationId=&cbPesquisa=NUMPROC&numeroDigitoAnoUnificado=${encodeURIComponent(cnj)}`,
+    TJPE: `https://srv01.tjpe.jus.br/consultaprocessualunificada/processo/${encodeURIComponent(cnj)}`,
   };
-  return urls[tribunal] ?? `https://www.cnj.jus.br/`;
+
+  return urls[tribunal] ?? cnjSearch;
 }
