@@ -76,6 +76,35 @@ function extractDate(hit: DatajudHit): string {
   return raw ? raw.substring(0, 10) : "";
 }
 
+function getTribunalUrl(tribunal: string, numeroProcesso: string): string {
+  const num = numeroProcesso.replace(/\D/g, "");
+  const numFormatado = formatNumeroProcesso(numeroProcesso);
+
+  const urls: Record<string, string> = {
+    STJ: `https://processo.stj.jus.br/processo/pesquisa/?tipoPesquisa=tipoPesquisaNumeroRegistro&termo=${num}`,
+    STF: `https://portal.stf.jus.br/processos/listarProcessos.asp?classe=&numeroProcesso=${num}`,
+    TST: `https://consultaprocessual.tst.jus.br/consultaProcessual/consultaTstNumUnica.do?consulta=Consultar&conscsjt=&numeroTst=${numFormatado}`,
+    TRF1: `https://processual.trf1.jus.br/consultaProcessual/processo.php?proc=${num}`,
+    TRF2: `https://portal.trf2.jus.br/portal/processo/consulta-processual?numeroProcesso=${numFormatado}`,
+    TRF3: `https://web.trf3.jus.br/base/base/Base/ResultadoPesquisa?TipoConsulta=1&NrProcesso=${num}`,
+    TRF4: `https://jurisprudencia.trf4.jus.br/pesquisa/pesquisa.php?tipo=1&numero=${numFormatado}`,
+    TRF5: `https://www.trf5.jus.br/processo/?numero=${num}`,
+    TJSP: `https://esaj.tjsp.jus.br/cpopg/show.do?processo.codigo=&processo.foro=&processo.numero=${numFormatado}`,
+    TJRJ: `https://www3.tjrj.jus.br/ejud/ConsultaProcesso.aspx?N=${num}`,
+    TJMG: `https://processo.tjmg.jus.br/jurisprudencia/pesquisaPalavrasEspelhoAcordao.do?numeroProcesso=${num}`,
+    TJRS: `https://www.tjrs.jus.br/site/processos/processo/?numero=${num}`,
+    TJPR: `https://projudi.tjpr.jus.br/projudi/`,
+    TJSC: `https://esaj.tjsc.jus.br/cpopg/search.do?conversationId=&cbPesquisa=NUMPROC&numeroDigitoAnoUnificado=${numFormatado}`,
+    TJBA: `https://esaj.tjba.jus.br/cpopg/search.do?conversationId=&cbPesquisa=NUMPROC&numeroDigitoAnoUnificado=${numFormatado}`,
+    TJGO: `https://projudi.tjgo.jus.br/BuscaProcesso?PaginaAtual=1&Historico=1&NumeroProcesso=${num}`,
+    TJPE: `https://srv01.tjpe.jus.br/consultaprocessualunificada/processo/${numFormatado}`,
+    TJCE: `https://esaj.tjce.jus.br/cpopg/search.do?conversationId=&cbPesquisa=NUMPROC&numeroDigitoAnoUnificado=${numFormatado}`,
+    TJDFT: `https://www.tjdft.jus.br/consultas/jurisprudencia/pesquisa-de-jurisprudencia`,
+  };
+
+  return urls[tribunal] ?? `https://www.cnj.jus.br/pesquisas-judiciarias/datajud/`;
+}
+
 function formatNumeroProcesso(num: string): string {
   // Formata para o padrão CNJ: NNNNNNN-DD.AAAA.J.TT.OOOO
   const clean = num.replace(/\D/g, "");
@@ -246,7 +275,7 @@ export async function GET(req: NextRequest) {
         ementa: extractEmenta(hit),
         tipo: classe || "Processo",
         assunto,
-        url: undefined,
+        url: getTribunalUrl(tribunal, hit._source.numeroProcesso ?? ""),
       };
     });
 

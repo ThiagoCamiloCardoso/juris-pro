@@ -183,7 +183,7 @@ export default function SearchResults({ query, tribunal, periodo }: Props) {
               )}
 
               {/* Actions */}
-              <div className="flex items-center gap-3 mt-4 pt-3 border-t border-slate-100">
+              <div className="flex items-center gap-3 mt-4 pt-3 border-t border-slate-100 flex-wrap">
                 <button
                   onClick={() => handleResumoIA(item)}
                   className="flex items-center gap-1.5 text-xs font-semibold text-blue-700 hover:text-blue-900 transition-colors"
@@ -200,10 +200,10 @@ export default function SearchResults({ query, tribunal, periodo }: Props) {
                     href={item.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-800 transition-colors ml-auto"
+                    className="ml-auto flex items-center gap-1.5 bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
                   >
-                    Ver inteiro teor
                     <ExternalLink className="w-3.5 h-3.5" />
+                    Ver no {item.tribunal}
                   </a>
                 )}
               </div>
