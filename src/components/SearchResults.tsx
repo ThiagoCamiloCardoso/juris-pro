@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Sparkles, ExternalLink, ChevronDown, ChevronUp, Loader2, AlertCircle, Building2 } from "lucide-react";
+import { Sparkles, ExternalLink, ChevronDown, ChevronUp, Loader2, AlertCircle, Building2, FileSearch } from "lucide-react";
+import Link from "next/link";
 
 interface Jurisprudencia {
   id: string;
@@ -195,17 +196,27 @@ export default function SearchResults({ query, tribunal, periodo }: Props) {
                     : <ChevronDown className="w-3.5 h-3.5" />}
                 </button>
 
-                {item.url && (
-                  <a
-                    href={item.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="ml-auto flex items-center gap-1.5 bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                <div className="ml-auto flex items-center gap-2">
+                  <Link
+                    href={`/processo/${encodeURIComponent(item.id)}?tribunal=${item.tribunal}`}
+                    className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-blue-700 border border-slate-300 hover:border-blue-400 px-3 py-1.5 rounded-lg transition-colors"
                   >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                    Ver no {item.tribunal}
-                  </a>
-                )}
+                    <FileSearch className="w-3.5 h-3.5" />
+                    Ver detalhes
+                  </Link>
+
+                  {item.url && (
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      {item.tribunal}
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           </article>
